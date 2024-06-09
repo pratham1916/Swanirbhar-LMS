@@ -2,14 +2,37 @@ const express = require("express");
 const { auth } = require("../middleware/auth.middleware");
 const { access } = require("../middleware/access.middleware");
 const { assignmentModel } = require("../model/assignment.model");
+const { courseModel } = require("../model/course.model");
 const assignmentRouter = express.Router();
 
 
-//get all the assignment(instructor)
+//get all the assignment for specific Course(instructor)
+// assignmentRouter.get("/:id", auth, access("instructor"), async (req, res) => {
+//     const courseId = req.params.id;
+//     try {
+//         const assignmentDetails = await assignmentModel.findOne({ _id: courseId });
+
+//         res.status(201).json({ status: "success", message: "Assignment created successfully", assignment: assignmentDetails });
+//     } catch (error) {
+//         res.status(500).json({ status: "error", message: "Error creating assignment", error });
+//     }
+// });
+
 assignmentRouter.get("/", auth, access("instructor"), async (req, res) => {
     try {
         const assignmentDetails = await assignmentModel.find();
 
+        res.status(201).json({ status: "success", message: "Assignment created successfully", assignment: assignmentDetails });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: "Error creating assignment", error });
+    }
+});
+
+assignmentRouter.get("/myAssignment", auth, access("student"), async (req, res) => {
+    try {
+        const courses = await courseModel.find({students:{$in:[req.user._id]}})
+        const assignmentDetails = await assignmentModel.find({course:{$in:courses.map((e)=>e._id)}});
+        
         res.status(201).json({ status: "success", message: "Assignment created successfully", assignment: assignmentDetails });
     } catch (error) {
         res.status(500).json({ status: "error", message: "Error creating assignment", error });

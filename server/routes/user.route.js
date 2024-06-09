@@ -4,22 +4,19 @@ const userRouter = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-userRouter.get("/", (req, res) => {
-    res.send("Hiii");
-});
-
+//Register For User
 userRouter.post("/register", async (req, res) => {
     const { fullname, email, password } = req.body;
     try {
         const existingUserByEmail = await userModel.findOne({ email });
 
         if (existingUserByEmail) {
-            return res.status(400).json({ message: "Email already exists", status: "error" });
+            return res.status(400).json({ message: "Email already exists, Please Login", status: "error" });
         }
 
-        bcrypt.hash(password, 5, async (err, hash) => {
+        bcrypt.hash(password, 10, async (err, hash) => {
             if (err) {
-                return res.status(400).json({ message: "Invalid Password", err });
+                return res.status(400).json({ message: "Error hashing password", status: "error" });
             }
             const userDetails = new userModel({
                 fullname, email, password: hash
@@ -32,6 +29,7 @@ userRouter.post("/register", async (req, res) => {
     }
 });
 
+//Login For the User
 userRouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -40,16 +38,16 @@ userRouter.post("/login", async (req, res) => {
             bcrypt.compare(password, user.password, (err, result) => {
                 if (result) {
                     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY);
-                    res.status(200).json({ message: "Login Successful", token, user });
+                    res.status(200).json({ status: "success", message: "Login Successful", token, user });
                 } else {
-                    res.status(400).json({ message: "Wrong Email or Password", status: "error" });
+                    res.status(400).json({status: "error", message: "Wrong Email or Password"});
                 }
             });
         } else {
-            res.status(400).json({ message: "Email does not exist", status: 'error' });
+            res.status(400).json({ status: "error", message: "Email does not exist"});
         }
     } catch (error) {
-        res.status(400).json({ message: "Login Failed", status: "error" });
+        res.status(400).json({status: "error", message: "Login Failed"});
     }
 });
 

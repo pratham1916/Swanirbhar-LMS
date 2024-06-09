@@ -1,0 +1,30 @@
+/* Dashboard.css */
+
+.sider {
+    overflow: auto;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+  }
+  
+  .logo {
+    /* Styles for the logo */
+  }
+  
+  .content-layout {
+    margin-left: 200px;
+  }
+  
+  .content {
+    margin: 24px 16px 0;
+    overflow: initial;
+  }
+  
+  .content-inner {
+    padding: 24px;
+    background: #fff;
+    min-height: 360px;
+  }
+  

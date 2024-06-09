@@ -6,10 +6,6 @@ const assignmentSchema = mongoose.Schema({
     description: { type: String },
     course: { type: mongoose.Schema.Types.ObjectId, ref: "course"},
     deadline: { type: Date },
-    submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-    submissionURL: { type: String },
-    grade: { type: Number },
-    feedback:{type:String}
 }, {versionKey: false, timestamps: true });
 
 assignmentSchema.plugin(paginate);
