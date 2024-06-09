@@ -15,9 +15,10 @@ const AllCourses = () => {
     const [loading, setLoading] = useState(false);
     const [pagination, setPagination] = useState({
         current: 1,
-        pageSize: 8, 
+        pageSize: 12,
         total: 0
     });
+    const userData = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
         fetchData(pagination.current, pagination.pageSize);
@@ -65,7 +66,7 @@ const AllCourses = () => {
                 }
             });
             const totalPages = Math.ceil((pagination.total + 1) / pagination.pageSize);
-            fetchData(totalPages, pagination.pageSize); 
+            fetchData(totalPages, pagination.pageSize);
             message.success(response.data.message)
             setVisible(false);
             form.resetFields();
@@ -83,7 +84,9 @@ const AllCourses = () => {
         <div className="all-courses-container">
             {loading ? <Spin className="loading-spinner" /> : (
                 <>
-                    <Button type="primary" onClick={showDrawer} className="create-course-button">Create New Course</Button>
+                    {userData.role === 'instructor' && (
+                        <Button type="primary" onClick={showDrawer} className="create-course-button">Create New Course</Button>
+                    )}
 
                     <Row gutter={[16, 16]} className="courses-row">
                         {courses.map(course => (
@@ -140,7 +143,7 @@ const AllCourses = () => {
                         <Input placeholder='Material URL' className="form-input" />
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" loading={loading} htmlType="submit" className="form-submit-button">Submit</Button>
+                        <Button size='small' type="primary" loading={loading} htmlType="submit" className="form-submit-button">Submit</Button>
                     </Form.Item>
                 </Form>
             </Drawer>
