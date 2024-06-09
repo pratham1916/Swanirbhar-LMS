@@ -3,7 +3,7 @@ import AllRoutes from './AllRoutes/AllRoutes';
 import './App.css'
 import Navbar from './components/Navbar';
 
-export const baseUrl = "http://localhost:8080"
+export const baseUrl = "https://swanirbhar-lms-backend.onrender.com"
 
 function App() {
   const [isUser, setIsUser] = useState(false);

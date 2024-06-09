@@ -18,6 +18,7 @@ const AllRoutes = ({ setIsUser }) => {
             <Route path="/register" element={<RegisterForm />} />
             <Route path='/allCourses' element={<PrivateRoute><AllCourses/></PrivateRoute>}/>
             <Route path='/singleCourses/:courseId' element={<PrivateRoute><SingleCourse/></PrivateRoute>}/>
+            <Route path='/myCourses' element={<PrivateRoute><MyCourses/></PrivateRoute>}/>
             <Route path='/assignment' element={<PrivateRoute><Assignment/></PrivateRoute>}/>
 
         </Routes>
