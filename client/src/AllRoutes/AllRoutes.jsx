@@ -6,6 +6,7 @@ import PrivateRoute from './PrivateRoutes';
 import AllCourses from '../pages/AllCourses';
 import SingleCourse from '../pages/SingleCourse';
 import MyCourses from '../pages/MyCourses';
+import Assignment from '../pages/Assignment';
 
 const AllRoutes = ({ setIsUser }) => {
     const isUser = localStorage.getItem("user");
@@ -17,7 +18,7 @@ const AllRoutes = ({ setIsUser }) => {
             <Route path="/register" element={<RegisterForm />} />
             <Route path='/allCourses' element={<PrivateRoute><AllCourses/></PrivateRoute>}/>
             <Route path='/singleCourses/:courseId' element={<PrivateRoute><SingleCourse/></PrivateRoute>}/>
-            <Route path='/myCourses' element={<PrivateRoute><MyCourses/></PrivateRoute>}/>
+            <Route path='/assignment' element={<PrivateRoute><Assignment/></PrivateRoute>}/>
 
         </Routes>
     );

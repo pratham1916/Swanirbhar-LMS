@@ -75,7 +75,7 @@ assignmentRouter.delete("/:id", auth, access("instructor"), async (req, res) => 
     const assignmentId = req.params.id;
 
     try {
-        const deletedAssignment = await assignmentModel.findByIdAndDelete(assignmentId);
+        await assignmentModel.findByIdAndDelete(assignmentId);
 
         res.status(200).json({ status: "success", message: "Assignment deleted successfully" });
     } catch (error) {

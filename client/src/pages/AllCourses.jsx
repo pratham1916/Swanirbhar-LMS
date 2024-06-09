@@ -85,7 +85,7 @@ const AllCourses = () => {
             {loading ? <Spin className="loading-spinner" /> : (
                 <>
                     {userData.role === 'instructor' && (
-                        <Button type="primary" onClick={showDrawer} className="create-course-button">Create New Course</Button>
+                        <Button size='small' type="primary" onClick={showDrawer} className="create-course-button">Create New Course</Button>
                     )}
 
                     <Row gutter={[16, 16]} className="courses-row">

@@ -67,7 +67,7 @@ const Navbar = ({ setIsUser }) => {
                     <Link to="/allCourses" className={`navbar-link ${location.pathname === "/allCourses" ? "active" : ""}`} onClick={closeMenu}>All Courses</Link>
                     {isInstructor && (
                         <>
-                            
+                            <Link to="/assignment" className={`navbar-link ${location.pathname === "/assignment" ? "active" : ""}`} onClick={closeMenu}>Assignment</Link>
                         </>
                     )}
                     {isStudent && (

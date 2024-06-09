@@ -228,7 +228,7 @@ const SingleCourse = () => {
                                         label="Description"
                                         rules={[{ required: true, message: 'Please enter the description' }]}
                                     >
-                                        <Input />
+                                        <Input.TextArea />
                                     </Form.Item>
                                 </>
                             ) : (
