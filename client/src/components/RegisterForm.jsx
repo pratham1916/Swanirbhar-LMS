@@ -3,6 +3,7 @@ import { Form, Input, Button, message, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "../styles/login-register.css";
+import { baseUrl } from '../App';
 const { Text } = Typography;
 
 const RegisterForm = () => {
@@ -13,7 +14,7 @@ const RegisterForm = () => {
     const onFinish = async (formData) => {
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:8080/user/register", formData);
+            const response = await axios.post(`${baseUrl}/user/register`, formData);
             if (response.data.status === "success") {
                 message.success(response.data.message);
                 navigate('/login');
