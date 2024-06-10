@@ -58,7 +58,7 @@ const AllCourses = () => {
             const courseData = {
                 courseName,
                 description,
-                materials: [{ title, url }]
+                topics: [{ title, url }]
             };
             const response = await axios.post(`${baseUrl}/courses`, courseData, {
                 headers: {
@@ -134,13 +134,13 @@ const AllCourses = () => {
                         <Input placeholder='Course Name' className="form-input" />
                     </Form.Item>
                     <Form.Item name="description" rules={[{ required: true, message: 'Please enter the description' }]}>
-                        <Input.TextArea placeholder='Description' className="form-textarea" />
+                        <Input.TextArea rows={5} placeholder='Description' className="form-textarea" />
                     </Form.Item>
                     <Form.Item name="title" rules={[{ required: true, message: 'Please enter the title' }]}>
-                        <Input placeholder='Material Title' className="form-input" />
+                        <Input placeholder='Topic Title' className="form-input" />
                     </Form.Item>
                     <Form.Item name="url" rules={[{ required: true, message: 'Please enter the URL' }]}>
-                        <Input placeholder='Material URL' className="form-input" />
+                        <Input placeholder='Topic URL' className="form-input" />
                     </Form.Item>
                     <Form.Item>
                         <Button size='small' type="primary" loading={loading} htmlType="submit" className="form-submit-button">Submit</Button>
