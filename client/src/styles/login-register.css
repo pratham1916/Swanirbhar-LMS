@@ -1,14 +1,15 @@
-.form-container {
-    border-radius: 8px;
-    width: 320px;
-    margin: auto;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+.body-container {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 1px solid black;
-    margin-top: 7%;
+    height: 100vh;
+}
+
+.form-container {
+    border-radius: 8px;
+    width: 380px;
+    margin: auto;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 .login-image-container {
@@ -38,13 +39,11 @@
     width: 100%;
     padding: 5px 8px;
     border-radius: 4px;
-    height: 30px;
 }
 
 .form-button {
     width: 100%;
     font-weight: 700;
-    height: 25px;
 }
 
 .account-link-container {

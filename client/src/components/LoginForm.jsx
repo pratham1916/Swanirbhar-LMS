@@ -31,24 +31,26 @@ const LoginForm = ({ setIsUser }) => {
     };
 
     return (
-        <div className='form-container'>
-            <div className="login-image-container"></div>
-            <div className="form-content">
-                <Form name="signInForm" form={form} onFinish={onFinish}>
-                    <Form.Item name="email" rules={[{ required: true, message: 'Please enter your email!' }]}>
-                        <Input className="form-input" placeholder="Enter Your Email" />
-                    </Form.Item>
-                    <Form.Item name="password" rules={[{ required: true, message: 'Please enter your password!' }]}>
-                        <Input.Password className="form-input" placeholder="Enter password" />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" className="form-button" loading={loading} htmlType="submit">Login</Button>
-                    </Form.Item>
-                    <div className="account-link-container">
-                        <Text className="account-link-text">Don't have an account?</Text>
-                        <Link to="/register" className='form-link-btn'>Register</Link>
-                    </div>
-                </Form>
+        <div className="body-container">
+            <div className='form-container'>
+                <div className="login-image-container"></div>
+                <div className="form-content">
+                    <Form name="signInForm" form={form} onFinish={onFinish}>
+                        <Form.Item name="email" rules={[{ required: true, message: 'Please enter your email!' }]}>
+                            <Input className="form-input" placeholder="Enter Your Email" />
+                        </Form.Item>
+                        <Form.Item name="password" rules={[{ required: true, message: 'Please enter your password!' }]}>
+                            <Input.Password className="form-input" placeholder="Enter password" />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" className="form-button" loading={loading} htmlType="submit">Login</Button>
+                        </Form.Item>
+                        <div className="account-link-container">
+                            <Text className="account-link-text">Don't have an account?</Text>
+                            <Link to="/register" className='form-link-btn'>Register</Link>
+                        </div>
+                    </Form>
+                </div>
             </div>
         </div>
     );

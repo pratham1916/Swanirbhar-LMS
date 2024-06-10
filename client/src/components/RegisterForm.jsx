@@ -28,27 +28,29 @@ const RegisterForm = () => {
     };
 
     return (
-        <div className='form-container'>
-            <div className="register-image-container"></div>
-            <div className="form-content">
-                <Form form={form} onFinish={onFinish}>
-                    <Form.Item name='fullname' rules={[{ required: true, message: 'Please add Full Name' }]}>
-                        <Input className="form-input" placeholder="Full Name" />
-                    </Form.Item>
-                    <Form.Item name='email' rules={[{ required: true, type: 'email', message: 'Please add valid Email' }]}>
-                        <Input className="form-input" placeholder='Enter Email' />
-                    </Form.Item>
-                    <Form.Item name="password" rules={[{ required: true, message: 'Please enter Password' }]}>
-                        <Input.Password className="form-input" placeholder="Enter Password" />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" className="form-button" loading={loading} htmlType="submit">Register</Button>
-                    </Form.Item>
-                    <div className="account-link-container">
-                        <Text className="account-link-text">Already Have Account</Text>
-                        <Link to="/login" className='form-link-btn'>Login</Link>
-                    </div>
-                </Form>
+        <div className="body-container">
+            <div className='form-container'>
+                <div className="register-image-container"></div>
+                <div className="form-content">
+                    <Form form={form} onFinish={onFinish}>
+                        <Form.Item name='fullname' rules={[{ required: true, message: 'Please add Full Name' }]}>
+                            <Input className="form-input" placeholder="Full Name" />
+                        </Form.Item>
+                        <Form.Item name='email' rules={[{ required: true, type: 'email', message: 'Please add valid Email' }]}>
+                            <Input className="form-input" placeholder='Enter Email' />
+                        </Form.Item>
+                        <Form.Item name="password" rules={[{ required: true, message: 'Please enter Password' }]}>
+                            <Input.Password className="form-input" placeholder="Enter Password" />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" className="form-button" loading={loading} htmlType="submit">Register</Button>
+                        </Form.Item>
+                        <div className="account-link-container">
+                            <Text className="account-link-text">Already Have Account</Text>
+                            <Link to="/login" className='form-link-btn'>Login</Link>
+                        </div>
+                    </Form>
+                </div>
             </div>
         </div>
     );

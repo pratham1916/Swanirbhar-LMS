@@ -71,7 +71,7 @@ const AllCourses = () => {
             setVisible(false);
             form.resetFields();
         } catch (error) {
-            console.error('Error creating course:', error);
+            console.error(error.response.data.message);
         }
         setLoading(false);
     };
@@ -130,16 +130,16 @@ const AllCourses = () => {
                 className="create-course-drawer"
             >
                 <Form layout="vertical" form={form} onFinish={handleSubmit} className="create-course-form">
-                    <Form.Item name="courseName" rules={[{ required: true, message: 'Please enter the course name' }]}>
+                    <Form.Item name="courseName" label="Course Name" rules={[{ required: true, message: 'Please enter the course name' }]}>
                         <Input placeholder='Course Name' className="form-input" />
                     </Form.Item>
-                    <Form.Item name="description" rules={[{ required: true, message: 'Please enter the description' }]}>
+                    <Form.Item name="description" label="Description" rules={[{ required: true, message: 'Please enter the description' }]}>
                         <Input.TextArea rows={5} placeholder='Description' className="form-textarea" />
                     </Form.Item>
-                    <Form.Item name="title" rules={[{ required: true, message: 'Please enter the title' }]}>
+                    <Form.Item name="title" label="Topic Title" rules={[{ required: true, message: 'Please enter the title' }]}>
                         <Input placeholder='Topic Title' className="form-input" />
                     </Form.Item>
-                    <Form.Item name="url" rules={[{ required: true, message: 'Please enter the URL' }]}>
+                    <Form.Item label="Topic URL"  name="url" rules={[{ required: true, message: 'Please enter the URL' }]}>
                         <Input placeholder='Topic URL' className="form-input" />
                     </Form.Item>
                     <Form.Item>
