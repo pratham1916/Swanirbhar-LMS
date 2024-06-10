@@ -62,7 +62,7 @@ const Navbar = ({ setIsUser }) => {
     return (
         <>
             <header className={`navbar-header ${isMenuOpen ? "navbar-open" : ""} ${isScrolled ? "navbar-sticky" : ""}`} id='nav-menu'>
-                <Link to="/" className="navbar-logo" onClick={closeMenu}>Swanirbhar</Link>
+                <Link to="/" className="navbar-logo" onClick={closeMenu}>Swarnirbhar</Link>
                 <nav className={`navbar ${isMenuOpen ? "navbar-expanded" : ""}`}>
                     <Link to="/allCourses" className={`navbar-link ${location.pathname === "/allCourses" ? "active" : ""}`} onClick={closeMenu}>All Courses</Link>
                     {isInstructor && (

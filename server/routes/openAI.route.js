@@ -9,13 +9,15 @@ aiRouter.post("/course-details", async (req, res) => {
     try {
         const { query } = req.body;
 
-        const prompt = `${query} please give on point answer and give answer in about 100 - 120 words in Paragraph`;
+        const prompt = `You are an AI assistant for an online learning platform. Please respond to course-related questions only. If the question is not related to courses, respond with "I can only answer questions related to our courses."
+        Question: ${query}
+        Response: Please provide a concise answer of 100-120 words in paragraph form.`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = await response.text();
 
-        res.status(200).json({success: true,text});
+        res.status(200).json({ success: true, text });
     } catch (err) {
         res.status(500).json({
             success: false,

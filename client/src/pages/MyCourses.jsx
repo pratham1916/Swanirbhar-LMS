@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Spin, Pagination, Card, Row, Col } from 'antd';
+import { Spin, Pagination, Card, Row, Col, Empty } from 'antd';
 import { baseUrl } from '../App';
 import { Link } from 'react-router-dom';
 
@@ -47,7 +47,9 @@ const MyCourses = () => {
     return (
         <div className="all-courses-container">
             {loading ?
-                <Spin className="loading-spinner" />
+                (<Spin className="loading-spinner" />): courses.length === 0 ? (
+                    <Empty className="empty-message" description="No data found" /> 
+                ) 
                 : (
                     <>
                         <Row gutter={[16, 16]} className="courses-row">

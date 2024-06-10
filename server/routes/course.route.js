@@ -9,7 +9,7 @@ const courseRouter = express.Router();
 courseRouter.get("/", auth, access("student", "instructor"), async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 8;
+        const limit = parseInt(req.query.limit) || 12;
 
         const options = {
             page,
@@ -42,7 +42,7 @@ courseRouter.get("/", auth, access("student", "instructor"), async (req, res) =>
 courseRouter.get("/myCourses", auth, access("student"), async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 8    ;
+        const limit = parseInt(req.query.limit) || 12;
 
         const query = { students: { $in: [req.user._id] } };
         const options = {
@@ -168,7 +168,7 @@ courseRouter.post("/:courseId/topics", auth, access("instructor"), async (req, r
         await course.save();
         res.status(200).json({ status: "success", message: "Topics added successfully", course });
     } catch (error) {
-        res.status(500).json({status: "error", message: "Internal server error" });
+        res.status(500).json({ status: "error", message: "Internal server error" });
     }
 });
 

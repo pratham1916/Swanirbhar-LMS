@@ -221,37 +221,37 @@ const SingleCourse = () => {
                                         label="Course Name"
                                         rules={[{ required: true, message: 'Please enter the course name' }]}
                                     >
-                                        <Input />
+                                        <Input  placeholder='Course Name' />
                                     </Form.Item>
                                     <Form.Item
                                         name="description"
                                         label="Description"
                                         rules={[{ required: true, message: 'Please enter the description' }]}
                                     >
-                                        <Input.TextArea />
+                                        <Input.TextArea placeholder='Description' />
                                     </Form.Item>
                                 </>
                             ) : (
                                 <>
                                     <Form.Item
                                         name="title"
-                                        label="Title"
+                                        label="Topic Title"
                                         rules={[{ required: true, message: 'Please enter the title' }]}
                                     >
-                                        <Input />
+                                        <Input placeholder='Topic Title' />
                                     </Form.Item>
                                     <Form.Item
                                         name="url"
-                                        label="URL"
+                                        label="Topic URL"
                                         rules={[{ required: true, message: 'Please enter the URL' }]}
                                     >
-                                        <Input />
+                                        <Input placeholder='Topic URL' />
                                     </Form.Item>
                                 </>
                             )}
                             <Form.Item>
-                                <Button loading={loading} type="primary" htmlType="submit">{isEditingMode ? (currentEditingTopic ? "Update Topic" : "Update Course") : "Submit"}</Button>
-                                <Button onClick={handleCloseDrawer} style={{ marginLeft: 8 }}>Cancel</Button>
+                                <Button size='small' loading={loading} type="primary" htmlType="submit">{isEditingMode ? (currentEditingTopic ? "Update Topic" : "Update Course") : "Submit"}</Button>
+                                <Button size='small' onClick={handleCloseDrawer} style={{ marginLeft: 8 }}>Cancel</Button>
                             </Form.Item>
                         </Form>
                     </Drawer>

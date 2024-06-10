@@ -20,11 +20,32 @@ const assignmentRouter = express.Router();
 
 assignmentRouter.get("/", auth, access("instructor"), async (req, res) => {
     try {
-        const assignmentDetails = await assignmentModel.find();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
 
-        res.status(201).json({ status: "success", message: "Assignment created successfully", assignment: assignmentDetails });
+        const options = {
+            page,
+            limit,
+            populate: [
+                { path: 'course', select: 'courseName' },
+            ]
+        };
+
+        const assignments = await assignmentModel.paginate({}, options);
+
+        res.status(200).json({
+            status: "success",
+            assignments: assignments.docs,
+            totalData: assignments.totalDocs,
+            pages: assignments.totalPages
+        });
+
     } catch (error) {
-        res.status(500).json({ status: "error", message: "Error creating assignment", error });
+        res.status(500).json({
+            status: "error",
+            message: "Error getting assignments",
+            error: error.message
+        });
     }
 });
 
@@ -39,8 +60,22 @@ assignmentRouter.get("/myAssignment", auth, access("student"), async (req, res) 
     }
 });
 
+// Get details of a specific Assignment
+assignmentRouter.get("/:id", auth, access("student", "instructor"), async (req, res) => {
+    const assignmentId = req.params.id;
+    try {
+        const assignmentDetails = await assignmentModel.findById(assignmentId).populate('course')
+        if (!assignmentDetails) {
+            return res.status(404).json({ status: "error", message: "Assignment not found" });
+        }
+        res.status(200).json({ status: "success", assignmentDetails });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: "Error getting assignment details", error });
+    }
+});
+
 //Create the assignment(instructor)
-assignmentRouter.post("/", auth, access("instuctor"), async (req, res) => {
+assignmentRouter.post("/", auth, access("instructor"), async (req, res) => {
     const { title, description, deadline, courseId } = req.body;
 
     try {
