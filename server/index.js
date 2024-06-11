@@ -6,6 +6,7 @@ const { userRouter } = require("./routes/user.route");
 const { courseRouter } = require("./routes/course.route");
 const { assignmentRouter } = require("./routes/assignment.route");
 const aiRouter = require("./routes/openAI.route");
+const { submissionRoute } = require("./routes/assignmentSubmission.route");
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/courses", courseRouter);
 app.use("/assignment",assignmentRouter)
+app.use("/submission",submissionRoute)
 app.use("/",aiRouter)
 
 app.listen(process.env.PORT, async () => {

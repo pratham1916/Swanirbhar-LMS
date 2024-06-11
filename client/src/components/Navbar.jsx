@@ -73,6 +73,8 @@ const Navbar = ({ setIsUser }) => {
                     {isStudent && (
                         <>
                             <Link to="/myCourses" className={`navbar-link ${location.pathname === "/myCourses" ? "active" : ""}`} onClick={closeMenu}>My Courses</Link>
+                            <Link to="/myAssignment" className={`navbar-link ${location.pathname === "/myAssignment" ? "active" : ""}`} onClick={closeMenu}>Assignment</Link>
+                            <Link to="/mySubmission" className={`navbar-link ${location.pathname === "/mySubmission" ? "active" : ""}`} onClick={closeMenu}>Submissions</Link>
                         </>
                     )}
                     <Dropdown overlay={userMenu} className="user-dropdown" placement="bottom">

@@ -6,18 +6,6 @@ const { courseModel } = require("../model/course.model");
 const assignmentRouter = express.Router();
 
 
-//get all the assignment for specific Course(instructor)
-// assignmentRouter.get("/:id", auth, access("instructor"), async (req, res) => {
-//     const courseId = req.params.id;
-//     try {
-//         const assignmentDetails = await assignmentModel.findOne({ _id: courseId });
-
-//         res.status(201).json({ status: "success", message: "Assignment created successfully", assignment: assignmentDetails });
-//     } catch (error) {
-//         res.status(500).json({ status: "error", message: "Error creating assignment", error });
-//     }
-// });
-
 assignmentRouter.get("/", auth, access("instructor"), async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -51,12 +39,30 @@ assignmentRouter.get("/", auth, access("instructor"), async (req, res) => {
 
 assignmentRouter.get("/myAssignment", auth, access("student"), async (req, res) => {
     try {
-        const courses = await courseModel.find({students:{$in:[req.user._id]}})
-        const assignmentDetails = await assignmentModel.find({course:{$in:courses.map((e)=>e._id)}});
-        
-        res.status(201).json({ status: "success", message: "Assignment created successfully", assignment: assignmentDetails });
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+
+        const courses = await courseModel.find({ students: { $in: [req.user._id] } });
+        const courseIds = courses.map(course => course._id);
+
+        const options = {
+            page,
+            limit,
+            populate: [
+                { path: 'course', select: 'courseName' },
+            ]
+        };
+
+        const assignments = await assignmentModel.paginate({ course: { $in: courseIds } }, options);
+
+        res.status(200).json({
+            status: "success",
+            assignments: assignments.docs,
+            totalData: assignments.totalDocs,
+            pages: assignments.totalPages,
+        });
     } catch (error) {
-        res.status(500).json({ status: "error", message: "Error creating assignment", error });
+        res.status(500).json({status: "error",message: "Error getting assignments"});
     }
 });
 
@@ -115,45 +121,6 @@ assignmentRouter.delete("/:id", auth, access("instructor"), async (req, res) => 
         res.status(200).json({ status: "success", message: "Assignment deleted successfully" });
     } catch (error) {
         res.status(500).json({ status: "error", message: "Error deleting assignment", error });
-    }
-});
-
-
-// Submit an assignment (student)
-assignmentRouter.post("/submit/:id", auth, access("student"), async (req, res) => {
-    const assignmentId = req.params.id;
-    const { submissionURL } = req.body;
-
-    try {
-        const assignment = await assignmentModel.findById(assignmentId);
-        if (assignment.submittedBy) {
-            return res.status(400).json({ status: "error", message: "Assignment already submitted" });
-        }
-        assignment.submissionURL = submissionURL;
-        assignment.submittedBy = req.user._id;
-        const submittedAssignment = await assignment.save();
-        res.status(200).json({ status: "success", message: "Assignment submitted successfully", assignment: submittedAssignment });
-    } catch (error) {
-        res.status(500).json({ status: "error", message: "Error submitting assignment", error });
-    }
-});
-
-// Provide feedback and grade for an assignment (instructor)
-assignmentRouter.put("/feedback/:id", auth, access("instructor"), async (req, res) => {
-    const assignmentId = req.params.id;
-    const { grade, feedback } = req.body;
-
-    try {
-        const assignment = await assignmentModel.findById(assignmentId);
-        if (!assignment.submittedBy) {
-            return res.status(400).json({ status: "error", message: "Assignment not submitted yet" });
-        }
-        assignment.grade = grade;
-        assignment.feedback = feedback;
-        const updatedAssignment = await assignment.save();
-        res.status(200).json({ status: "success", message: "Feedback and grade provided successfully", assignment: updatedAssignment });
-    } catch (error) {
-        res.status(500).json({ status: "error", message: "Error providing feedback and grade", error });
     }
 });
 

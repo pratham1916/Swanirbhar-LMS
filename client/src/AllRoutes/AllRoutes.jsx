@@ -8,6 +8,8 @@ import SingleCourse from '../pages/SingleCourse';
 import MyCourses from '../pages/MyCourses';
 import Assignment from '../pages/Assignment';
 import SingleAssignment from '../pages/SingleAssignment';
+import MyAssignment from '../pages/MyAssignment';
+import MySubmission from '../pages/MySubmission';
 
 const AllRoutes = ({ setIsUser }) => {
     const isUser = localStorage.getItem("user");
@@ -22,6 +24,9 @@ const AllRoutes = ({ setIsUser }) => {
             <Route path='/myCourses' element={<PrivateRoute><MyCourses/></PrivateRoute>}/>
             <Route path='/assignment' element={<PrivateRoute><Assignment/></PrivateRoute>}/>
             <Route path='/singleAssignment/:assignmentId' element={<PrivateRoute><SingleAssignment/></PrivateRoute>}/>
+            <Route path='/myAssignment' element={<PrivateRoute><MyAssignment/></PrivateRoute>}/>
+            <Route path='/mySubmission' element={<PrivateRoute><MySubmission/></PrivateRoute>}/>
+            
 
         </Routes>
     );
