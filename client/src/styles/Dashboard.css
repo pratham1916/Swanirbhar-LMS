@@ -1,30 +1,110 @@
-/* Dashboard.css */
+.sidebar {
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  transition: all 0.2s;
+  overflow: auto;
+}
 
-.sider {
-    overflow: auto;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 0 15px;
+}
+
+.logo-icon {
+  width: 35px;
+}
+
+.logo-text {
+  color: black;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.slider-search-container {
+  margin-bottom: 25px;
+  padding: 0 10px;
+}
+
+.slider-search-bar {
+  margin-right: 10px;
+  padding: 5px;
+  background-color: rgb(247, 247, 247);
+}
+
+.menu-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+.header {
+  background-color: #fff;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  /* border: 1px solid red; */
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 15px;
+}
+
+.search-bar {
+  width: 400px;
+  padding: 8px;
+}
+
+.search-bar i,
+.slider-search-bar i {
+  padding: 0 8px;
+}
+
+.search-filter-icon {
+  font-size: 18px;
+}
+
+.content {
+  background: #fff;
+  /* height: calc(100vh - 64px); */
+  overflow-y: auto;
+}
+
+.float-button {
+  font-weight: 800;
+}
+
+.navbar-link {
+  font-weight: 600;
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .search-bar {
+    width: 400px;
   }
-  
-  .logo {
-    /* Styles for the logo */
+}
+
+@media (max-width: 767px) {
+  .search-container {
+    width: auto;
   }
-  
-  .content-layout {
-    margin-left: 200px;
+
+  .search-bar {
+    width: 100%;
   }
-  
+
   .content {
-    margin: 24px 16px 0;
-    overflow: initial;
+    margin-left: 0;
   }
-  
-  .content-inner {
-    padding: 24px;
-    background: #fff;
-    min-height: 360px;
-  }
-  
+}

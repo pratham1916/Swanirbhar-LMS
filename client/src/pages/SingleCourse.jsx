@@ -1,44 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Card, Button, Drawer, Form, Input, message, List, Spin } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { Card, Button, Drawer, Form, Input, message, List, Spin, Upload } from 'antd';
+import { EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { baseUrl } from '../App';
 import '../styles/SingleCourse.css';
 
-const SingleCourse = () => {
+const SingleCourse = ({ userDetails }) => {
+    const [form] = Form.useForm();
     const [courseData, setCourseData] = useState(null);
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
     const [isEditingMode, setIsEditingMode] = useState(false);
     const [currentEditingTopic, setCurrentEditingTopic] = useState(null);
-    const [form] = Form.useForm();
     const { courseId } = useParams();
     const [loading, setLoading] = useState(false);
     const token = localStorage.getItem('token');
-    const userData = JSON.parse(localStorage.getItem('user'));
-    const userRole = userData.role;
     const navigate = useNavigate();
     const [isEnrolled, setIsEnrolled] = useState(false);
 
-    useEffect(() => {
-        const fetchCourseData = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.get(`${baseUrl}/courses/${courseId}`, {
-                    headers: {
-                        Authorization: `${token}`
-                    }
-                });
-                setCourseData(response.data.course);
+    const fetchCourseData = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${baseUrl}/courses/${courseId}`, {
+                headers: {
+                    Authorization: `${token}`
+                }
+            });
+            setCourseData(response.data.course);
+            setIsEnrolled(response.data.course.enrolledUsers.some(user => user._id === userDetails._id));
+        } catch (error) {
+            console.error('Error fetching course:', error);
+        }
+        setLoading(false);
+    };
 
-                setIsEnrolled(response.data.course.students.some(student => student._id === userData._id));
-            } catch (error) {
-                console.error('Error fetching course:', error);
-            }
-            setLoading(false);
-        };
+    useEffect(() => {
         fetchCourseData();
-    }, [courseId, token]);
+    }, [courseId, userDetails._id]);
 
     const handleEnrollCourse = async () => {
         setLoading(true);
@@ -49,21 +47,11 @@ const SingleCourse = () => {
                 }
             });
             message.success(response.data.message);
-            navigate("/myCourses");
+            navigate("/dashboard/myCourses");
         } catch (error) {
             message.error(error.response.data.message);
         }
         setLoading(false);
-    };
-
-    const handleShowDrawer = () => {
-        setIsEditingMode(false);
-        setIsDrawerVisible(true);
-    };
-
-    const handleCloseDrawer = () => {
-        setIsDrawerVisible(false);
-        form.resetFields();
     };
 
     const handleAddTopics = async (values) => {
@@ -75,7 +63,7 @@ const SingleCourse = () => {
                 }
             });
             message.success(response.data.message);
-            setCourseData(response.data.course);
+            fetchCourseData();
             setIsDrawerVisible(false);
             form.resetFields();
         } catch (error) {
@@ -88,37 +76,38 @@ const SingleCourse = () => {
         setIsEditingMode(true);
         form.setFieldsValue({
             courseName: courseData.courseName,
-            description: courseData.description
+            description: courseData.description,
+            pricing: courseData.pricing,
         });
         setIsDrawerVisible(true);
     };
 
     const handleUpdateCourse = async (values) => {
+        const formData = new FormData();
+        formData.append('courseName', values.courseName);
+        formData.append('description', values.description);
+        formData.append('pricing', values.pricing);
+
+        if (values.thumbnail && values.thumbnail.file) {
+            formData.append('thumbnail', values.thumbnail.file.originFileObj);
+        }
+
         setLoading(true);
         try {
-            const response = await axios.put(`${baseUrl}/courses/${courseId}`, values, {
+            const response = await axios.put(`${baseUrl}/courses/${courseId}`, formData, {
                 headers: {
-                    Authorization: `${token}`
+                    Authorization: `${token}`,
+                    'Content-Type': 'multipart/form-data',
                 }
             });
             message.success(response.data.message);
-            setCourseData(response.data.course);
+            fetchCourseData();
             setIsDrawerVisible(false);
             form.resetFields();
         } catch (error) {
             message.error(error.response.data.message);
         }
         setLoading(false);
-    };
-
-    const handleEditTopic = (topic) => {
-        setIsEditingMode(true);
-        setCurrentEditingTopic(topic);
-        form.setFieldsValue({
-            title: topic.title,
-            url: topic.url
-        });
-        setIsDrawerVisible(true);
     };
 
     const handleUpdateTopic = async (values) => {
@@ -130,7 +119,7 @@ const SingleCourse = () => {
                 }
             });
             message.success(response.data.message);
-            setCourseData(response.data.course);
+            fetchCourseData();
             setIsDrawerVisible(false);
             form.resetFields();
             setCurrentEditingTopic(null);
@@ -149,25 +138,42 @@ const SingleCourse = () => {
                 }
             });
             message.success('Course deleted successfully');
-            navigate("/allCourses");
+            navigate("/dashboard/allCourses");
         } catch (error) {
             message.error(error.response.data.message);
         }
         setLoading(false);
     };
 
+    const handleEditTopic = (topic) => {
+        setIsEditingMode(true);
+        setCurrentEditingTopic(topic);
+        form.setFieldsValue({
+            title: topic.title,
+            url: topic.url
+        });
+        setIsDrawerVisible(true);
+    };
+
+    const handleShowDrawer = () => {
+        setIsEditingMode(false);
+        setIsDrawerVisible(true);
+    };
+
+    const handleCloseDrawer = () => {
+        setIsDrawerVisible(false);
+        form.resetFields();
+    };
+
     const renderActionButton = () => {
-        if (userRole === 'student') {
-            if (isEnrolled) {
-                return null;
-            }
+        if (!isEnrolled && userDetails._id !== courseData.createdBy._id) {
             return <Button size="small" type="primary" onClick={handleEnrollCourse}>Enroll</Button>;
-        } else {
+        } else if (userDetails._id === courseData.createdBy._id) {
             return (
                 <>
-                    <Button loading={loading} size="small" type="primary" onClick={handleShowDrawer}>Add Topics</Button>
-                    <Button loading={loading} size="small" type="primary" onClick={handleEditCourse} style={{ marginLeft: 8 }}>Edit Course</Button>
-                    <Button loading={loading} type="primary" size="small" danger onClick={handleDeleteCourse} style={{ marginLeft: 8 }}>Delete Course</Button>
+                    <Button loading={loading} type="primary" onClick={handleShowDrawer}>Add Topics</Button>
+                    <Button loading={loading} type="primary" onClick={handleEditCourse} style={{ marginLeft: 8 }}>Edit Course</Button>
+                    <Button loading={loading} type="primary" danger onClick={handleDeleteCourse} style={{ marginLeft: 8 }}>Delete Course</Button>
                 </>
             );
         }
@@ -182,16 +188,14 @@ const SingleCourse = () => {
                             <h2 className="single-course-name">{courseData.courseName}</h2>
                             <p className="single-course-description">{courseData.description}</p>
                             <div className="single-course-topics">
-                                {(userRole === 'instructor' || isEnrolled) ? (
+                                {isEnrolled ? (
                                     <>
                                         <List
                                             dataSource={courseData.topics}
-                                            renderItem={(material) => (
-                                                <List.Item
-                                                    actions={userRole === 'instructor' ? [<EditOutlined onClick={() => handleEditTopic(material)} />] : []}
-                                                >
+                                            renderItem={(topic) => (
+                                                <List.Item actions={userDetails._id === courseData.createdBy._id ? [<EditOutlined key="edit" onClick={() => handleEditTopic(topic)} />] : []}>
                                                     <List.Item.Meta
-                                                        title={<a href={material.url} target="_blank" rel="noopener noreferrer">{material.title}</a>}
+                                                        title={<a href={topic.url} target="_blank" rel="noopener noreferrer">{topic.title}</a>}
                                                     />
                                                 </List.Item>
                                             )}
@@ -202,14 +206,13 @@ const SingleCourse = () => {
                                     <div className="single-course-action-buttons">{renderActionButton()}</div>
                                 )}
                             </div>
-
-                            <Link to="/allCourses" className="single-course-back-link">Back to All Courses</Link>
+                            <Link to="/dashboard/allCourses" className="single-course-back-link">Back to All Courses</Link>
                         </Card>
                     )}
                     <Drawer
                         title={isEditingMode ? (currentEditingTopic ? "Edit Topic" : "Edit Course") : "Add Material"}
                         placement="right"
-                        closable={false}
+                        width={500}
                         onClose={handleCloseDrawer}
                         visible={isDrawerVisible}
                     >
@@ -221,14 +224,32 @@ const SingleCourse = () => {
                                         label="Course Name"
                                         rules={[{ required: true, message: 'Please enter the course name' }]}
                                     >
-                                        <Input  placeholder='Course Name' />
+                                        <Input placeholder='Course Name' />
                                     </Form.Item>
                                     <Form.Item
                                         name="description"
                                         label="Description"
                                         rules={[{ required: true, message: 'Please enter the description' }]}
                                     >
-                                        <Input.TextArea placeholder='Description' />
+                                        <Input.TextArea rows={8} placeholder='Description' />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="pricing"
+                                        label="Pricing"
+                                        rules={[{ required: true, message: 'Please enter the pricing' }]}
+                                    >
+                                        <Input placeholder='Pricing' />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="thumbnail"
+                                        label="Thumbnail"
+                                    >
+                                        <Upload
+                                            listType="picture"
+                                            maxCount={1}
+                                        >
+                                            <Button icon={<UploadOutlined />}>Upload</Button>
+                                        </Upload>
                                     </Form.Item>
                                 </>
                             ) : (
@@ -250,8 +271,7 @@ const SingleCourse = () => {
                                 </>
                             )}
                             <Form.Item>
-                                <Button size='small' loading={loading} type="primary" htmlType="submit">{isEditingMode ? (currentEditingTopic ? "Update Topic" : "Update Course") : "Submit"}</Button>
-                                <Button size='small' onClick={handleCloseDrawer} style={{ marginLeft: 8 }}>Cancel</Button>
+                                <Button loading={loading} type="primary" htmlType="submit">{isEditingMode ? (currentEditingTopic ? "Update Topic" : "Update Course") : "Submit"}</Button>
                             </Form.Item>
                         </Form>
                     </Drawer>

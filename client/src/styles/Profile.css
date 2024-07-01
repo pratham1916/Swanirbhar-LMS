@@ -1,0 +1,118 @@
+.profile-container {
+    padding: 0 2% 2%;
+}
+
+.banner {
+    background: linear-gradient(to right, #7070ff, #8eb5ff, #fdfdfd);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.banner-content {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+}
+
+.profile-picture img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+
+.profile-picture h2 {
+    color: white;
+    margin-top: 10px;
+}
+.logout-delete-button {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.info-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.left-container {
+    flex-basis: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.membership-container,
+.about-container,
+.qualification-container {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.about-container .info-content {
+    text-align: center;
+}
+
+.about-container p {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.about-container p .anticon {
+    margin-right: 8px;
+    color: #1890ff;
+}
+
+.qualification-container {
+    flex-basis: 70%;
+}
+
+.qualification-container img {
+    width: 30%;
+    display: block;
+    margin: auto;
+}
+
+.info-heading {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-heading h2 {
+    font-size: 22px;
+    color: #333;
+}
+
+.info-content {
+    font-size: 16px;
+}
+
+.info-items{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.info-items i{
+    font-size: 18px;
+}
+
+.info-items a i{
+    font-size: 22px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}

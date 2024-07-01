@@ -25,10 +25,6 @@ const MySubmission = () => {
                 headers: {
                     Authorization: `${token}`
                 },
-                params: {
-                    page: page,
-                    limit: limit
-                }
             });
             const data = response.data;
             setSubmissions(data.submissions);

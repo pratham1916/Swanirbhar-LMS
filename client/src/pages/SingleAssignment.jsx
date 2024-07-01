@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { message, Spin, Button, Drawer, Form, Input, DatePicker, Table, Pagination, Modal } from 'antd';
+import { message, Spin, Button, Drawer, Form, Input, DatePicker, Table, Pagination } from 'antd';
 import { baseUrl } from '../App';
 import moment from 'moment';
 import '../styles/SingleAssignment.css';
@@ -9,31 +9,31 @@ import '../styles/SingleAssignment.css';
 const { TextArea } = Input;
 
 const SingleAssignment = () => {
-    const { assignmentId } = useParams();
-    const navigate = useNavigate();
+    const [form] = Form.useForm();
     const [assignmentData, setAssignmentData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
-    const [form] = Form.useForm();
     const token = localStorage.getItem("token");
     const userData = JSON.parse(localStorage.getItem('user'));
     const userRole = userData.role;
     const [submissionSuccess, setSubmissionSuccess] = useState(false);
     const [selectedSubmission, setSelectedSubmission] = useState(null);
     const [feedbackDrawerVisible, setFeedbackDrawerVisible] = useState(false);
-
-    // New state variables for submissions and pagination
+    const { assignmentId } = useParams();
+    const navigate = useNavigate();
     const [submissions, setSubmissions] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalData, setTotalData] = useState(0);
+    const [pagination, setPagination] = useState({
+        currentPage: 1,
+        pageSize: 12,
+        totalItems: 0
+    });
 
     useEffect(() => {
         fetchAssignment();
         if (userRole === 'instructor') {
-            fetchSubmissions(currentPage);
+            fetchSubmissions(pagination.currentPage, pagination.pageSize);
         }
-    }, [assignmentId, currentPage, userRole]);
+    }, [assignmentId, pagination.currentPage, userRole]);
 
     const fetchAssignment = async () => {
         setLoading(true);
@@ -50,7 +50,7 @@ const SingleAssignment = () => {
         setLoading(false);
     };
 
-    const fetchSubmissions = async (page) => {
+    const fetchSubmissions = async (page, limit) => {
         setLoading(true);
         try {
             const response = await axios.get(`${baseUrl}/submission/${assignmentId}`, {
@@ -59,13 +59,15 @@ const SingleAssignment = () => {
                 },
                 params: {
                     page: page,
-                    limit: 12
+                    limit: limit
                 }
             });
             const data = response.data;
             setSubmissions(data.submissions);
-            setTotalPages(data.pages);
-            setTotalData(data.totalData);
+            setPagination({
+                ...pagination,
+                totalItems: data.totalData
+            });
         } catch (error) {
             message.error(error.response?.data?.message || "Error fetching submissions");
         }
@@ -172,7 +174,7 @@ const SingleAssignment = () => {
     ];
 
     const handlePageChange = (page) => {
-        setCurrentPage(page);
+        setPagination({ ...pagination, currentPage: page });
     };
 
     const handleFeedback = (record) => {
@@ -194,8 +196,7 @@ const SingleAssignment = () => {
             });
             message.success(response.data.message);
             closeFeedbackDrawer();
-            // Refetch submissions after providing feedback
-            fetchSubmissions(currentPage);
+            fetchSubmissions(pagination.currentPage, pagination.pageSize);
         } catch (error) {
             message.error(error.response.data.message);
         }
@@ -211,6 +212,22 @@ const SingleAssignment = () => {
                             <h2 className="single-assignment-title">{assignmentData.title}</h2>
                             <p className="single-assignment-description">Problem Statement: {assignmentData.description}</p>
                             <p className="single-assignment-deadline">Deadline: {moment(assignmentData.deadline).format("DD/MM/YYYY HH:mm")}</p>
+                            {userRole === 'student' && !submissionSuccess && (
+                            <div className="submission-form">
+                                <Form layout="vertical" onFinish={handleSubmission}>
+                                    <Form.Item
+                                        name="submissionURL"
+                                        label="Submission URL"
+                                        rules={[{ required: true, message: 'Please enter the submission URL' }]}
+                                    >
+                                        <Input placeholder="Please enter the submission URL" />
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <Button type="primary" htmlType="submit">Submit</Button>
+                                    </Form.Item>
+                                </Form>
+                            </div>
+                        )}
                             {userRole === 'instructor' && (
                                 <>
                                     <Button size='small' style={{ marginRight: "10px" }} type="primary" onClick={showDrawer}>Edit</Button>
@@ -228,19 +245,22 @@ const SingleAssignment = () => {
                                     pagination={false}
                                 />
                                 <Pagination
-                                    current={currentPage}
-                                    total={totalData}
-                                    pageSize={12}
+                                    current={pagination.currentPage}
+                                    total={pagination.totalItems}
+                                    pageSize={pagination.pageSize}
                                     onChange={handlePageChange}
                                     style={{ marginTop: '20px', textAlign: 'right' }}
                                 />
                             </div>
                         )}
+
+                        
                     </>
                 ) : (
                     <p>No assignment data available</p>
                 )
-            )}        <Drawer
+            )}
+            <Drawer
                 title="Edit Assignment"
                 width={420}
                 onClose={closeDrawer}
@@ -260,7 +280,7 @@ const SingleAssignment = () => {
                         label="Description"
                         rules={[{ required: true, message: 'Please enter the description' }]}
                     >
-                        <TextArea placeholder="Please enter the description" />
+                        <TextArea rows={8} placeholder="Please enter the description" />
                     </Form.Item>
                     <Form.Item
                         name="deadline"
@@ -306,4 +326,4 @@ const SingleAssignment = () => {
     );
 };
 
-export default SingleAssignment;                        
+export default SingleAssignment;

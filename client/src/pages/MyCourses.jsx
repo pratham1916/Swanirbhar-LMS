@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Spin, Pagination, Card, Row, Col, Empty } from 'antd';
+import { Spin, Pagination, Card, Row, Col, Empty, Button, message } from 'antd';
 import { baseUrl } from '../App';
 import { Link } from 'react-router-dom';
 
@@ -14,18 +14,25 @@ const MyCourses = () => {
         pageSize: 12,
         total: 0
     });
+    const [activeButton, setActiveButton] = useState('added');
+
     const token = localStorage.getItem('token');
 
     useEffect(() => {
-        fetchCourses(pagination.current, pagination.pageSize);
-    }, [pagination.current, pagination.pageSize]);
+        fetchCourses(pagination.current, pagination.pageSize, activeButton);
+    }, [pagination.current, pagination.pageSize, activeButton]);
 
-    const fetchCourses = async (page, limit) => {
+    const fetchCourses = async (page, limit, type) => {
         setLoading(true);
         try {
-            const response = await axios.get(`${baseUrl}/courses/myCourses?page=${page}&limit=${limit}`, {
+            const endpoint = type === 'added' ? '/courses/myAddedCourses' : '/courses/myEnrolledCourses';
+            const response = await axios.get(`${baseUrl}${endpoint}`, {
                 headers: {
                     Authorization: token
+                },
+                params: {
+                    page,
+                    limit
                 }
             });
             setCourses(response.data.courses);
@@ -33,11 +40,10 @@ const MyCourses = () => {
                 ...pagination,
                 total: response.data.totalData
             });
-            setLoading(false);
         } catch (error) {
-            setError(error.response ? error.response.data.message : 'Error fetching data');
-            setLoading(false);
+            message.error(error.response?.data?.message || 'Error fetching courses');
         }
+        setLoading(false);
     };
 
     const handlePageChange = (page) => {
@@ -46,44 +52,67 @@ const MyCourses = () => {
 
     return (
         <div className="all-courses-container">
-            {loading ?
-                (<Spin className="loading-spinner" />): courses.length === 0 ? (
-                    <Empty className="empty-message" description="No data found" /> 
-                ) 
-                : (
-                    <>
-                        <Row gutter={[16, 16]} className="courses-row">
-                        {courses.map(course => (
-                            <Col key={course._id} xs={24} sm={12} md={8} lg={6} className="course-col">
-                                <Card className="course-card"
+            {loading ? <Spin className="loading-spinner" /> : (
+                <>
+                    <div className="flex-container">
+                        <div style={{display:"flex",gap:"5px"}}>
+                            <Button
+                                type={activeButton === 'added' ? 'primary' : 'default'}
+                                onClick={() => setActiveButton('added')}
+                                className="courses-button"
+                            >
+                                Added Courses
+                            </Button>
+                            <Button
+                                type={activeButton === 'enrolled' ? 'primary' : 'default'}
+                                onClick={() => setActiveButton('enrolled')}
+                                className="courses-button"
+                            >
+                                Enrolled Courses
+                            </Button>
+                        </div>
+                        <div className="pagination-container">
+                            <Pagination
+                                total={pagination.total}
+                                current={pagination.current}
+                                pageSize={pagination.pageSize}
+                                onChange={handlePageChange}
+                                showTotal={(total) => `Total ${total} Courses`}
+                            />
+                        </div>
+                    </div>
+
+                    {courses.length === 0 ? (
+                        <div className="empty-results-container">
+                            <Empty description="No courses found" />
+                        </div>
+                    ) : (
+                        <Row className="courses-row">
+                            {courses.map(course => (
+                                <Card key={course._id} className="course-card"
                                     actions={[
-                                        <Link to={`/singleCourses/${course._id}`} className="view-course-link">View Course</Link>
+                                        <Link to={`/dashboard/singleCourse/${course._id}`} className="view-course-link">View Course</Link>
                                     ]}
                                 >
+                                    <div className="course-image-container">
+                                        <img className="course-image" src={`${baseUrl}/uploads/thumbnails/${course.thumbnail}`} alt="Course Thumbnail" />
+                                    </div>
                                     <Meta
                                         title={course.courseName}
                                         description={
                                             <div>
-                                                <p className="course-instructor">Instructor: {course.instructor.fullname}</p>
-                                                <p className="course-students">Students Enrolled: {course.students.length}</p>
+                                                <p className="course-instructor">Instructor: {course.createdBy.firstname} {course.createdBy.lastname}</p>
+                                                <p className="course-students">Students Enrolled: {course.enrolledUsers.length}</p>
+                                                <p className="course-price">Price: {course.pricing}</p>
                                             </div>
                                         }
                                     />
                                 </Card>
-                            </Col>
-                        ))}
-                    </Row>
-                    <div className="pagination-container">
-                        <Pagination
-                            total={pagination.total}
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            onChange={handlePageChange}
-                            showTotal={(total) => `Total ${total} Courses`}
-                        />
-                    </div>
-                    </>
-                )}
+                            ))}
+                        </Row>
+                    )}
+                </>
+            )}
         </div>
     );
 };

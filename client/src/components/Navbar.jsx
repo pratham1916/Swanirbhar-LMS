@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Dropdown, Modal, FloatButton } from 'antd';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import "../styles/Navbar.css";
-import ChatBox from './ChatBox';
+
 
 
 const Navbar = ({ setIsUser }) => {

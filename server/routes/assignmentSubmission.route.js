@@ -1,8 +1,8 @@
 const express = require("express");
 const { auth } = require("../middleware/auth.middleware");
-const { access } = require("../middleware/access.middleware");
 const { assignmentModel } = require("../model/assignment.model");
 const { assignmentSubmissionModel } = require("../model/assignmentSubmission.model");
+const { access } = require("../middleware/access.middleware");
 
 const submissionRoute = express.Router();
 
@@ -18,14 +18,14 @@ submissionRoute.post("/submit/:id", auth, access("student"), async (req, res) =>
             return res.status(404).json({ status: "error", message: "Assignment not found" });
         }
 
-        const existingSubmission = await assignmentSubmissionModel.findOne({ assignment: assignmentId, submittedBy: userId });
+        const existingSubmission = await assignmentSubmissionModel.findOne({ assignmentData: assignmentId, submittedBy: userId });
 
         if (existingSubmission) {
             return res.status(400).json({ status: "error", message: "Assignment already submitted" });
         }
 
         const newSubmission = new assignmentSubmissionModel({
-            assignment: assignmentId,
+            assignmentData: assignmentId, // Corrected field name
             submittedBy: userId,
             submissionURL: submissionURL
         });
@@ -34,25 +34,25 @@ submissionRoute.post("/submit/:id", auth, access("student"), async (req, res) =>
 
         res.status(200).json({ status: "success", message: "Assignment submitted successfully", savedSubmission });
     } catch (error) {
-        res.status(500).json({ status: "error", message: "Error submitting assignment", error });
+        console.error("Error submitting assignment:", error);
+        res.status(500).json({ status: "error", message: "Error submitting assignment" });
     }
 });
 
+// Get the submissions of a particular assignment
 submissionRoute.get("/:id", auth, access("instructor"), async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 12;
         const assignmentId = req.params.id; 
-       
-        const filter = { assignment: assignmentId }; 
+        
+        const filter = { assignmentData: assignmentId };
+        console.log(filter);
 
         const options = {
             page,
             limit,
-            populate: [
-                { path: 'assignment' },
-                { path: 'submittedBy' }
-            ]
+            populate: [{ path: 'assignmentData' }, { path: 'submittedBy' }]
         };
 
         const submissions = await assignmentSubmissionModel.paginate(filter, options);
@@ -68,15 +68,15 @@ submissionRoute.get("/:id", auth, access("instructor"), async (req, res) => {
         res.status(500).json({
             status: "error",
             message: "Error fetching submissions",
-            error: error.message
-        });
+            error
+        }); 
     }
 });
-
 
 // Route for students to view their own assignment submissions
 submissionRoute.get("/mySubmission", auth, access("student"), async (req, res) => {
     const userId = req.user._id;
+    console.log(userId);
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 12;
@@ -85,11 +85,11 @@ submissionRoute.get("/mySubmission", auth, access("student"), async (req, res) =
             page,
             limit,
             populate: [
-                { path: 'assignment' }
+                { path: 'assignmentData' } // Corrected populate field name
             ]
         };
-
-        const submissions = await assignmentSubmissionModel.paginate({ submittedBy: userId }, options);
+        
+        const submissions = await assignmentSubmissionModel.paginate({ submittedBy: userId }, options); // Filter by submittedBy instead of assignmentData
 
         res.status(200).json({
             status: "success",
@@ -99,20 +99,21 @@ submissionRoute.get("/mySubmission", auth, access("student"), async (req, res) =
         });
 
     } catch (error) {
+        console.error("Error fetching submissions:", error);
         res.status(500).json({
             status: "error",
-            message: "Error fetching submissions",
-            error: error.message
+            message: "Error fetching submissions"
         });
     }
 });
 
+// Provide feedback and grade for the submission
 submissionRoute.put("/feedback/:id", auth, access("instructor"), async (req, res) => {
     const assignmentId = req.params.id;
     const { grade, feedback } = req.body;
 
     try {
-        const assignmentSubmission = await assignmentSubmissionModel.findOne({ assignment: assignmentId });
+        const assignmentSubmission = await assignmentSubmissionModel.findOne({ assignmentData: assignmentId });
 
         if (!assignmentSubmission) {
             return res.status(404).json({ status: "error", message: "Assignment submission not found" });
@@ -122,7 +123,6 @@ submissionRoute.put("/feedback/:id", auth, access("instructor"), async (req, res
             return res.status(400).json({ status: "error", message: "Assignment is not yet submitted" });
         }
 
-        
         assignmentSubmission.grade = grade;
         assignmentSubmission.feedback = feedback;
 
@@ -130,11 +130,10 @@ submissionRoute.put("/feedback/:id", auth, access("instructor"), async (req, res
 
         res.status(200).json({ status: "success", message: "Feedback and grade provided successfully", updatedSubmission });
     } catch (error) {
-        res.status(500).json({ status: "error", message: "Error providing feedback and grade", error });
+        console.error("Error providing feedback and grade:", error);
+        res.status(500).json({ status: "error", message: "Error providing feedback and grade" });
     }
 });
-
-
 
 module.exports = {
     submissionRoute

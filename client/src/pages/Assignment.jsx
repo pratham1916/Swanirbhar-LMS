@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Drawer, Form, Input, DatePicker, Select, message, Pagination, Card, Row, Col } from 'antd';
+import { Button, Drawer, Form, Input, DatePicker, Select, message, Pagination, Card, Row, Col, Spin, Empty } from 'antd';
 import axios from 'axios';
 import { baseUrl } from '../App';
 import '../styles/Assignment.css';
@@ -27,6 +27,7 @@ const Assignment = () => {
   }, [pagination.currentPage, pagination.pageSize]);
 
   const fetchCourses = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${baseUrl}/courses`, {
         headers: {
@@ -100,80 +101,95 @@ const Assignment = () => {
 
   return (
     <div className="assignment-container">
-      <Button size='small' type="primary" onClick={showDrawer}>Create Assignment</Button>
-      <Drawer
-        title="Create a new assignment"
-        onClose={closeDrawer}
-        visible={isDrawerVisible}
-        bodyStyle={{ paddingBottom: 80 }}
-      >
-        <Form layout="vertical" form={form} onFinish={onFinish}>
-          <Form.Item
-            name="title"
-            label="Title"
-            rules={[{ required: true, message: 'Please enter the title' }]}
+      {isLoading ? <Spin className="loading-spinner" /> : (
+        <>
+          <Button size='small' type="primary" onClick={showDrawer}>Create Assignment</Button>
+          <Drawer
+            title="Create a new assignment"
+            onClose={closeDrawer}
+            visible={isDrawerVisible}
+            bodyStyle={{ paddingBottom: 80 }}
           >
-            <Input placeholder="Enter the title" />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="Description"
-            rules={[{ required: true, message: 'Please enter the description' }]}
-          >
-            <Input.TextArea rows={4} placeholder="Enter the description" />
-          </Form.Item>
-          <Form.Item
-            name="courseId"
-            label="Course"
-            rules={[{ required: true, message: 'Please select a course' }]}
-          >
-            <Select placeholder="Select a course" loading={isLoading}>
-              {courseList.map(course => (
-                <Option key={course._id} value={course._id}>{course.courseName}</Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="deadline"
-            label="Deadline"
-            rules={[{ required: true, message: 'Please select the deadline' }]}
-          >
-            <DatePicker showTime placeholder="Select deadline" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
-      </Drawer>
+            <Form layout="vertical" form={form} onFinish={onFinish}>
+              <Form.Item
+                name="title"
+                label="Title"
+                rules={[{ required: true, message: 'Please enter the title' }]}
+              >
+                <Input placeholder="Enter the title" />
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label="Description"
+                rules={[{ required: true, message: 'Please enter the description' }]}
+              >
+                <Input.TextArea rows={4} placeholder="Enter the description" />
+              </Form.Item>
+              <Form.Item
+                name="courseId"
+                label="Course"
+                rules={[{ required: true, message: 'Please select a course' }]}
+              >
+                <Select placeholder="Select a course" loading={isLoading}>
+                  {courseList.map(course => (
+                    <Option key={course._id} value={course._id}>{course.courseName}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="deadline"
+                label="Deadline"
+                rules={[{ required: true, message: 'Please select the deadline' }]}
+              >
+                <DatePicker style={{ width: "100%" }} showTime placeholder="Select deadline" />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              </Form.Item>
+            </Form>
+          </Drawer>
 
+          <Row gutter={[16, 16]} className="assignment-row">
+            {assignmentList.length === 0 ? (
+              <Col span={24}>
+                <Empty description="No assignments found" />
+              </Col>
+            ) : (
+              assignmentList.map(assignment => (
+                <Col key={assignment._id} xs={24} sm={12} md={8} lg={6} className="assignment-col">
+                  <Card className="assignment-card"
+                    actions={[
+                      <Link to={`/singleAssignment/${assignment._id}`} className="view-course-link">View Assignment</Link>
+                    ]}
+                  >
+                    <p>Title: {assignment.title}</p>
+                    <p>Course: {assignment.course.courseName}</p>
+                    <p>Deadline: {moment(assignment.deadline).format("DD/MM/YYYY HH:mm")}</p>
+                  </Card>
+                </Col>
+              ))
+            )}
+          </Row>
 
-      <Row gutter={[16, 16]} className="assignment-row">
-        {assignmentList.map(assignment => (
-          <Col key={assignment._id} xs={24} sm={12} md={8} lg={6} className="assignment-col">
-            <Card className="assignment-card"
-              actions={[
-                <Link to={`/singleAssignment/${assignment._id}`} className="view-course-link">View Assignment</Link>
-              ]}
-            >
-              <p>Title: {assignment.title}</p>
-              <p>Course: {assignment.course.courseName}</p>
-              <p>Deadline: {moment(assignment.deadline).format("DD/MM/YYYY HH:mm")}</p>
-
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <div className="pagination-container">
-        <Pagination
-          total={pagination.totalItems}
-          current={pagination.currentPage}
-          pageSize={pagination.pageSize}
-          onChange={handlePageChange}
-          showTotal={(total) => `Total ${total} Assignment`}
-        />
-      </div>
+          <div className="pagination-container">
+            <Pagination
+              total={pagination.totalItems}
+              current={pagination.currentPage}
+              pageSize={pagination.pageSize}
+              onChange={handlePageChange}
+              showTotal={(total) => {
+                if (assignmentList.length === 0) {
+                  return "No assignments found";
+                } else {
+                  return `Total ${total} Assignment`;
+                }
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

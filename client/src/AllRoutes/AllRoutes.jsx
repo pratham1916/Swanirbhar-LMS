@@ -2,32 +2,24 @@ import React from 'react';
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
+import ForgotPassword from '../pages/ForgotPassword';
+import Dashboard from '../components/Dashboard';
 import PrivateRoute from './PrivateRoutes';
-import AllCourses from '../pages/AllCourses';
-import SingleCourse from '../pages/SingleCourse';
-import MyCourses from '../pages/MyCourses';
-import Assignment from '../pages/Assignment';
-import SingleAssignment from '../pages/SingleAssignment';
-import MyAssignment from '../pages/MyAssignment';
-import MySubmission from '../pages/MySubmission';
+import VerifyCode from '../pages/VerifyCode';
+import SetPassword from '../pages/SetPassword';
 
-const AllRoutes = ({ setIsUser }) => {
-    const isUser = localStorage.getItem("user");
-
+const AllRoutes = ({userDetails}) => {
+    const isUser = (localStorage.getItem("token") && localStorage.getItem("userId"))
+    
     return (
         <Routes>
-            <Route path="/" element={<Navigate to={isUser ? "/allCourses" : "/login"} />} />
-            <Route path="/login" element={<LoginForm setIsUser={setIsUser} />} />
+            <Route path="/" element={<Navigate to={isUser ? "/dashboard/home" : "/login"} />} />
+            <Route path="/login" element={<LoginForm/>} />
             <Route path="/register" element={<RegisterForm />} />
-            <Route path='/allCourses' element={<PrivateRoute><AllCourses/></PrivateRoute>}/>
-            <Route path='/singleCourses/:courseId' element={<PrivateRoute><SingleCourse/></PrivateRoute>}/>
-            <Route path='/myCourses' element={<PrivateRoute><MyCourses/></PrivateRoute>}/>
-            <Route path='/assignment' element={<PrivateRoute><Assignment/></PrivateRoute>}/>
-            <Route path='/singleAssignment/:assignmentId' element={<PrivateRoute><SingleAssignment/></PrivateRoute>}/>
-            <Route path='/myAssignment' element={<PrivateRoute><MyAssignment/></PrivateRoute>}/>
-            <Route path='/mySubmission' element={<PrivateRoute><MySubmission/></PrivateRoute>}/>
-            
-
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-otp" element={<VerifyCode />} />
+            <Route path="/reset-password" element={<SetPassword />} />
+            <Route path="/dashboard/*" element={<PrivateRoute><Dashboard userDetails={userDetails} /></PrivateRoute>} />
         </Routes>
     );
 }

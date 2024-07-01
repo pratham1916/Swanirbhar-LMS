@@ -4,6 +4,7 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 import "../styles/ChatBox.css";
 import axios from 'axios';
 import { baseUrl } from '../App';
+import '../styles/ChatBox.css';
 
 const ChatBox = ({ onClose }) => {
     const [messages, setMessages] = useState('');
@@ -39,7 +40,7 @@ const ChatBox = ({ onClose }) => {
                     value={query}
                     onChange={handleInputChange}
                     onPressEnter={handleQuerySubmit}
-                    style={{ width: 'calc(100% - 80px)', marginRight: '8px' }}
+                    style={{ width: 'calc(100% - 65px)', marginRight: '8px' }}
                 />
                 <Button type="primary" onClick={handleQuerySubmit}>
                     Ask

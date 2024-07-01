@@ -5,7 +5,7 @@ const { assignmentModel } = require("../model/assignment.model");
 const { courseModel } = require("../model/course.model");
 const assignmentRouter = express.Router();
 
-
+//Get All the Assignment(instructor)
 assignmentRouter.get("/", auth, access("instructor"), async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -37,6 +37,7 @@ assignmentRouter.get("/", auth, access("instructor"), async (req, res) => {
     }
 });
 
+//Get Only those Assignment for which student is Enroll For(sutudent)
 assignmentRouter.get("/myAssignment", auth, access("student"), async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
