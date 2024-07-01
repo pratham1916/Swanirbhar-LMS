@@ -3,10 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Button, Drawer, Form, Input, message, List, Spin, Upload } from 'antd';
 import { EditOutlined, UploadOutlined } from '@ant-design/icons';
-import { baseUrl } from '../App';
+import { baseUrl, userId } from '../App';
 import '../styles/SingleCourse.css';
 
-const SingleCourse = ({ userDetails }) => {
+const SingleCourse = () => {
     const [form] = Form.useForm();
     const [courseData, setCourseData] = useState(null);
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
@@ -27,7 +27,7 @@ const SingleCourse = ({ userDetails }) => {
                 }
             });
             setCourseData(response.data.course);
-            setIsEnrolled(response.data.course.enrolledUsers.some(user => user._id === userDetails._id));
+            setIsEnrolled(response.data.course.enrolledUsers.some(user => user._id === userId));
         } catch (error) {
             console.error('Error fetching course:', error);
         }
@@ -36,7 +36,7 @@ const SingleCourse = ({ userDetails }) => {
 
     useEffect(() => {
         fetchCourseData();
-    }, [courseId, userDetails._id]);
+    }, [courseId, userId]);
 
     const handleEnrollCourse = async () => {
         setLoading(true);
@@ -166,9 +166,9 @@ const SingleCourse = ({ userDetails }) => {
     };
 
     const renderActionButton = () => {
-        if (!isEnrolled && userDetails._id !== courseData.createdBy._id) {
+        if (!isEnrolled && userId !== courseData.createdBy._id) {
             return <Button size="small" type="primary" onClick={handleEnrollCourse}>Enroll</Button>;
-        } else if (userDetails._id === courseData.createdBy._id) {
+        } else if (userId === courseData.createdBy._id) {
             return (
                 <>
                     <Button loading={loading} type="primary" onClick={handleShowDrawer}>Add Topics</Button>
@@ -193,7 +193,7 @@ const SingleCourse = ({ userDetails }) => {
                                         <List
                                             dataSource={courseData.topics}
                                             renderItem={(topic) => (
-                                                <List.Item actions={userDetails._id === courseData.createdBy._id ? [<EditOutlined key="edit" onClick={() => handleEditTopic(topic)} />] : []}>
+                                                <List.Item actions={userId === courseData.createdBy._id ? [<EditOutlined key="edit" onClick={() => handleEditTopic(topic)} />] : []}>
                                                     <List.Item.Meta
                                                         title={<a href={topic.url} target="_blank" rel="noopener noreferrer">{topic.title}</a>}
                                                     />

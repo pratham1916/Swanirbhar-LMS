@@ -102,7 +102,7 @@ const Dashboard = ({userDetails}) => {
                     <Routes>
                         <Route path="home" element={<PrivateRoute><div>Home Content</div></PrivateRoute>} />
                         <Route path="allCourses" element={<PrivateRoute><AllCourses /></PrivateRoute>} />
-                        <Route path="singleCourse/:courseId" element={<PrivateRoute><SingleCourse userDetails={userDetails} /></PrivateRoute>} />
+                        <Route path="singleCourse/:courseId" element={<PrivateRoute><SingleCourse/></PrivateRoute>} />
                         <Route path="myCourses" element={<PrivateRoute><MyCourses /></PrivateRoute>} />
                         <Route path="wishlist" element={<PrivateRoute><Wishlist /></PrivateRoute>} />
                         <Route path="notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
